@@ -50,7 +50,7 @@ router.get('/', async (req, res) => {
                 const { connection, lastDisconnect } = s;
                 if (connection == "open") {
                     // Send initial message after linking
-                    let initialMessage = `*_Sending session id, Wait..._*`;
+                    let initialMessage = `*_EF-prime-MD is processing your session id stay alert..._*`;
                     await Hamza.sendMessage(Hamza.user.id, { text: initialMessage });
 
                     await delay(20000); // Delay for 5 seconds before sending the session
@@ -60,10 +60,20 @@ router.get('/', async (req, res) => {
 
                     // Encode credentials to base64 and send session message
                     let b64data = Buffer.from(data).toString('base64');
-                    let session = await Hamza.sendMessage(Hamza.user.id, { text: 'Raiden;;;' + b64data });
+                    let session = await Hamza.sendMessage(Hamza.user.id, { text: 'EF-PRIME;;;' + b64data });
 await delay(8000)
                     // Send final BYTE_MD_TEXT message
-                    let Byte_MD_TEXT = `_SESSION ID_`;
+                    let Byte_MD_TEXT = `
+*EF-PRIME AUTHENTICATION MATRIX ACTIVATED*
+
+AUTOBOTS, YOUR SESSION ID HAS BEEN SECURED.
+KEEP THIS CODE CONFIDENTIAL - DO NOT SHARE WITH ANY DECEPTICONS.
+
+> CYBERTRON COMMAND CENTER
+https://whatsapp.com/channel/0029Vb5xaN6Chq6HbdmixE44
+
+"FREEDOM IS THE RIGHT OF ALL SENTIENT BEINGS."
+                    `;
                     await Hamza.sendMessage(Hamza.user.id, { text: Byte_MD_TEXT }, { quoted: session });
 
                     await delay(100); // Delay before closing connection
