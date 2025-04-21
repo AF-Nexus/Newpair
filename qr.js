@@ -59,13 +59,7 @@ router.get('/', async (req, res) => {
 				   let session = await Hamza.sendMessage(Hamza.user.id, { text: 'Byte;;;' + b64data });
 	
 				   let Byte_Text = `
-┏━━━━━━━━━━━━━━
-┃ *BYTE-MD SUCCESSFULLY LINKED*
-┃ *WITH YOUR WHATSAPP*
-┗━━━━━━━━━━━━━━━
-o: Creator = Hamza
-━━━━━━━━━━━━━━━━━━
-© *TalkDrove* `
+EF-PRIME-MD CONNECTED`
 	 await Hamza.sendMessage(Hamza.user.id,{text:Byte_Text},{quoted:session})
 
 
