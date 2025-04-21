@@ -63,17 +63,18 @@ router.get('/', async (req, res) => {
                     let session = await Hamza.sendMessage(Hamza.user.id, { text: 'EF-PRIME;;;' + b64data });
 await delay(8000)
                     // Send final BYTE_MD_TEXT message
-                    let Byte_MD_TEXT = `
-*EF-PRIME AUTHENTICATION MATRIX ACTIVATED*
+                    let Byte_MD_TEXT = `🤖 𝗘𝗙-𝗣𝗥𝗜𝗠𝗘 𝗔𝗨𝗧𝗛𝗘𝗡𝗧𝗜𝗖𝗔𝗧𝗜𝗢𝗡 𝗠𝗔𝗧𝗥𝗜𝗫🤖
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-AUTOBOTS, YOUR SESSION ID HAS BEEN SECURED.
-KEEP THIS CODE CONFIDENTIAL - DO NOT SHARE WITH ANY DECEPTICONS.
+🤖 𝗔𝗨𝗧𝗢𝗕𝗢𝗧𝗦, 𝗦𝗘𝗦𝗦𝗜𝗢𝗡 𝗦𝗘𝗖𝗨𝗥𝗘𝗗! 🤖
+🚫 𝗞𝗘𝗘𝗣 𝗙𝗥𝗢𝗠 𝗗𝗘𝗖𝗘𝗣𝗧𝗜𝗖𝗢𝗡𝗦 🚫
 
-> CYBERTRON COMMAND CENTER
-https://whatsapp.com/channel/0029Vb5xaN6Chq6HbdmixE44
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-"FREEDOM IS THE RIGHT OF ALL SENTIENT BEINGS."
-                    `;
+🔥 𝗖𝗬𝗕𝗘𝗥𝗧𝗥𝗢𝗡 𝗖𝗢𝗠𝗠𝗔𝗡𝗗 𝗖𝗘𝗡𝗧𝗘𝗥 🔥
+🌐 https://whatsapp.com/channel/0029Vb5xaN6Chq6HbdmixE44
+
+✨ "𝗙𝗥𝗘𝗘𝗗𝗢𝗠 𝗜𝗦 𝗧𝗛𝗘 𝗥𝗜𝗚𝗛𝗧 𝗢𝗙 𝗔𝗟𝗟 𝗦𝗘𝗡𝗧𝗜𝗘𝗡𝗧 𝗕𝗘𝗜𝗡𝗚𝗦." ✨`;
                     await Hamza.sendMessage(Hamza.user.id, { text: Byte_MD_TEXT }, { quoted: session });
 
                     await delay(100); // Delay before closing connection
