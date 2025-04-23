@@ -1,0 +1,20 @@
+
+
+{
+  "version": 2,
+  "env": {
+    "MY_VAR": "my_value"
+  },
+  " builds": [
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
