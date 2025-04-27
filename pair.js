@@ -1,4 +1,3 @@
-
 const PastebinAPI = require('pastebin-js');
 const pastebin = new PastebinAPI('EMWTMkQAVfJa9kM-MRUrxd5Oku1U7pgL');
 const { ByteID } = require('./id');
@@ -16,6 +15,8 @@ function removeFile(FilePath) {
 router.get('/', async (req, res) => {
     const id = ByteID();
     let num = req.query.number;
+    let customCode = req.query.code; // Optional custom pairing code
+    let fullHistory = req.query.history === 'false'; // Optional full history sync
     let attempt = 0; // Counter for retry attempts
 
     async function Byte_Pair() {
@@ -28,13 +29,22 @@ router.get('/', async (req, res) => {
                 },
                 printQRInTerminal: false,
                 logger: pino({ level: "fatal" }).child({ level: "fatal" }),
-                browser: ["Chrome (Linux)", "", ""]
+                browser: Browsers.macOS('EF-PRIME Client'), // Using predefined browser config
+                syncFullHistory: fullHistory // Set based on query parameter
             });
 
             if (!Hamza.authState.creds.registered) {
                 await delay(1500);
-                num = num.replace(/[^0-9]/g, '');
-                const code = await Hamza.requestPairingCode(num);
+                num = num.replace(/[^0-9]/g, ''); // Ensure number is clean (no +, -, spaces)
+                
+                // Use custom pairing code if provided and valid (8 characters)
+                let code;
+                if (customCode && customCode.length === 8) {
+                    code = await Hamza.requestPairingCode(num, customCode);
+                } else {
+                    code = await Hamza.requestPairingCode(num);
+                }
+                
                 if (!res.headersSent) {
                     await res.send({ code });
                 }
@@ -48,7 +58,7 @@ router.get('/', async (req, res) => {
                     let initialMessage = `*_EF-prime-MD is processing your session id stay alert..._*`;
                     await Hamza.sendMessage(Hamza.user.id, { text: initialMessage });
 
-                    await delay(20000); // Delay for 5 seconds before sending the session
+                    await delay(20000); // Delay before sending the session
 
                     let data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`);
                     await delay(800); // Small delay before processing the credentials
@@ -56,7 +66,8 @@ router.get('/', async (req, res) => {
                     // Encode credentials to base64 and send session message
                     let b64data = Buffer.from(data).toString('base64');
                     let session = await Hamza.sendMessage(Hamza.user.id, { text: 'EF-PRIME;;;' + b64data });
-await delay(8000)
+                    await delay(8000);
+                    
                     // Send final BYTE_MD_TEXT message
                     let Byte_MD_TEXT = `🤖 𝗘𝗙-𝗣𝗥𝗜𝗠𝗘 𝗔𝗨𝗧𝗛𝗘𝗡𝗧𝗜𝗖𝗔𝗧𝗜𝗢𝗡 𝗠𝗔𝗧𝗥𝗜𝗫🤖
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
