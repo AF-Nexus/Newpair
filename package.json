@@ -1,6 +1,7 @@
-
 {
-  "description": "pair",
+  "name": "raiden-pair",
+  "description": "WhatsApp pairing utility",
+  "version": "1.0.0",
   "main": "./raiden.js",
   "engines": {
     "npm": ">=9.7.2",
@@ -10,7 +11,7 @@
     "start": "node raiden.js"
   },
   "author": "The Developer",
-  "license": "MIT license",
+  "license": "MIT",
   "dependencies": {
     "@whiskeysockets/baileys": "npm:@fizzxydev/baileys-pro@8.5.12",
     "awesome-phonenumber": "^6.8.0",
