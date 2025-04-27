@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "pino-pretty": "^10.2.0",
-    "@whiskeysockets/baileys": "npm:@fizzxydev/baileys-pro@8.5.12",
+    "@whiskeysockets/baileys": "npm:@fizzxydev/baileys-pro@8.6.11",
     "awesome-phonenumber": "^6.8.0",
     "body-parser": "latest",
     "express": "^4.19.2",
