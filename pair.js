@@ -88,7 +88,7 @@ router.get('/', async (req, res) => {
                     const sessionId = `EF-PRIME-MD_${pastebinId}`;
                     
                     // Send the session ID message only
-                    let session = await Hamza.sendMessage(Hamza.user.id, { text: `Your Session ID: ${sessionId}` });
+                    let session = await Hamza.sendMessage(Hamza.user.id, { text: `${sessionId}` });
                     
                     await delay(3000);
 
@@ -106,7 +106,7 @@ router.get('/', async (req, res) => {
 
 ✨ "𝗙𝗥𝗘𝗘𝗗𝗢𝗠 𝗜𝗦 𝗧𝗛𝗘 𝗥𝗜𝗚𝗛𝗧 𝗢𝗙 𝗔𝗟𝗟 𝗦𝗘𝗡𝗧𝗜𝗘𝗡𝗧 𝗕𝗘𝗜𝗡𝗚𝗦." ✨
 
-📌 Your Session ID: ${sessionId}`;
+`;
                     await Hamza.sendMessage(Hamza.user.id, { text: Byte_MD_TEXT }, { quoted: session });
 
                     // Store session info on Pastebin for easier recovery if needed
