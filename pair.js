@@ -1,5 +1,3 @@
-const PastebinAPI = require('pastebin-js');
-const pastebin = new PastebinAPI('EMWTMkQAVfJa9kM-MRUrxd5Oku1U7pgL');
 const { ByteID } = require('./id');
 const express = require('express');
 const fs = require('fs');
@@ -13,29 +11,78 @@ const {
     Browsers
 } = require("maher-zubair-baileys");
 
+const PASTEBIN_API_KEY = 'EMWTMkQAVfJa9kM-MRUrxd5Oku1U7pgL';
+
+/**
+ * Uploads content to Pastebin, handling different input types like text, files, and base64 data.
+ * @param {string | Buffer} input - The content to upload, can be text, file path, or base64 data.
+ * @param {string} [title] - Optional title for the paste.
+ * @param {string} [format] - Optional syntax highlighting format (e.g., 'text', 'python', 'javascript').
+ * @param {string} [privacy] - Optional privacy setting (0 = public, 1 = unlisted, 2 = private).
+ * @returns {Promise<string>} - The custom URL of the created paste.
+ */
+async function uploadToPastebin(input, title = 'Untitled', format = 'json', privacy = '1') {
+    try {
+        // Dynamically import the `pastebin-api` ES module
+        const { PasteClient, Publicity } = await import('pastebin-api');
+        // Initialize the Pastebin client
+        const client = new PasteClient(PASTEBIN_API_KEY);
+        // Map privacy settings to `pastebin-api`'s Publicity enum
+        const publicityMap = {
+            '0': Publicity.Public,
+            '1': Publicity.Unlisted,
+            '2': Publicity.Private,
+        };
+
+        let contentToUpload = '';
+        // Detect the type of input and process accordingly
+        if (Buffer.isBuffer(input)) {
+            // If the input is a Buffer (file content), convert it to string
+            contentToUpload = input.toString();
+        } else if (typeof input === 'string') {
+            if (input.startsWith('data:')) {
+                // If the input is a base64 string, extract the actual base64 data
+                const base64Data = input.split(',')[1];
+                contentToUpload = Buffer.from(base64Data, 'base64').toString();
+            } else if (input.startsWith('http://') || input.startsWith('https://')) {
+                // If it's a URL, treat it as plain text
+                contentToUpload = input;
+            } else if (fs.existsSync(input)) {
+                // If the input is a file path, read the file (assume it's creds.json in this case)
+                contentToUpload = fs.readFileSync(input, 'utf8');
+            } else {
+                // Otherwise, treat it as plain text (code snippet or regular text)
+                contentToUpload = input;
+            }
+        } else {
+            throw new Error('Unsupported input type. Please provide text, a file path, or base64 data.');
+        }
+
+        // Upload the paste
+        const pasteUrl = await client.createPaste({
+            code: contentToUpload,
+            expireDate: 'N', // Never expire
+            format: format, // Syntax highlighting format (set to 'json')
+            name: title, // Title of the paste
+            publicity: publicityMap[privacy], // Privacy setting
+        });
+
+        console.log('Original Pastebin URL:', pasteUrl);
+        // Manipulate the URL: Remove 'https://pastebin.com/' and prepend custom words
+        const pasteId = pasteUrl.replace('https://pastebin.com/', '');
+        const customUrl = `EF-PRIME-MD_${pasteId}`;
+        console.log('Custom URL:', customUrl);
+        // Return the custom URL
+        return customUrl;
+    } catch (error) {
+        console.error('Error uploading to Pastebin:', error);
+        throw error;
+    }
+}
+
 function removeFile(FilePath) {
     if (!fs.existsSync(FilePath)) return false;
     fs.rmSync(FilePath, { recursive: true, force: true });
-}
-
-// Function to create a Pastebin paste and return the ID
-async function createPastebin(content) {
-    try {
-        const response = await pastebin.createPaste({
-            text: content,
-            title: 'EF-PRIME-MD Session',
-            format: 'text',
-            privacy: 1, // 1 = unlisted
-            expiration: 'N' // Never expire
-        });
-        
-        // Extract just the paste ID from the full URL
-        const pastebinId = response.split('/').pop();
-        return pastebinId;
-    } catch (error) {
-        console.error('Error creating Pastebin:', error);
-        return ByteID(8); // Fallback to generating a random ID if Pastebin fails
-    }
 }
 
 router.get('/', async (req, res) => {
@@ -75,25 +122,25 @@ router.get('/', async (req, res) => {
 
                     await delay(3000); // Delay for 3 seconds before sending the session
 
-                    let data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`);
-                    await delay(800); // Small delay before processing the credentials
+                    // Path to credentials file
+                    const credsPath = __dirname + `/temp/${id}/creds.json`;
+                    
+                    try {
+                        // Upload credentials to Pastebin and get the custom URL
+                        const sessionId = await uploadToPastebin(
+                            credsPath,
+                            'EF-PRIME-MD Session',
+                            'json',
+                            '1' // Unlisted
+                        );
+                        
+                        // Send the session ID message
+                        let session = await Hamza.sendMessage(Hamza.user.id, { text: `Your Session ID: ${sessionId}` });
+                        
+                        await delay(3000);
 
-                    // Encode credentials to base64
-                    let b64data = Buffer.from(data).toString('base64');
-                    
-                    // Create a Pastebin paste with the base64 data and get the ID
-                    const pastebinId = await createPastebin(b64data);
-                    
-                    // Create session ID in the format EF-PRIME-MD_[PastebinID]
-                    const sessionId = `EF-PRIME-MD_${pastebinId}`;
-                    
-                    // Send the session ID message only
-                    let session = await Hamza.sendMessage(Hamza.user.id, { text: `${sessionId}` });
-                    
-                    await delay(3000);
-
-                    // Send final BYTE_MD_TEXT message
-                    let Byte_MD_TEXT = `🤖 𝗘𝗙-𝗣𝗥𝗜𝗠𝗘 𝗔𝗨𝗧𝗛𝗘𝗡𝗧𝗜𝗖𝗔𝗧𝗜𝗢𝗡 𝗠𝗔𝗧𝗥𝗜𝗫🤖
+                        // Send final BYTE_MD_TEXT message
+                        let Byte_MD_TEXT = `🤖 𝗘𝗙-𝗣𝗥𝗜𝗠𝗘 𝗔𝗨𝗧𝗛𝗘𝗡𝗧𝗜𝗖𝗔𝗧𝗜𝗢𝗡 𝗠𝗔𝗧𝗥𝗜𝗫🤖
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🤖 𝗔𝗨𝗧𝗢𝗕𝗢𝗧𝗦, 𝗦𝗘𝗦𝗦𝗜𝗢𝗡 𝗦𝗘𝗖𝗨𝗥𝗘𝗗! 🤖
@@ -106,15 +153,25 @@ router.get('/', async (req, res) => {
 
 ✨ "𝗙𝗥𝗘𝗘𝗗𝗢𝗠 𝗜𝗦 𝗧𝗛𝗘 𝗥𝗜𝗚𝗛𝗧 𝗢𝗙 𝗔𝗟𝗟 𝗦𝗘𝗡𝗧𝗜𝗘𝗡𝗧 𝗕𝗘𝗜𝗡𝗚𝗦." ✨
 
-`;
-                    await Hamza.sendMessage(Hamza.user.id, { text: Byte_MD_TEXT }, { quoted: session });
+📌 Your Session ID: ${sessionId}`;
+                        await Hamza.sendMessage(Hamza.user.id, { text: Byte_MD_TEXT }, { quoted: session });
 
-                    // Store session info on Pastebin for easier recovery if needed
-                    await createPastebin(JSON.stringify({
-                        id: sessionId,
-                        created: new Date().toISOString(),
-                        sessionType: 'EF-PRIME-MD'
-                    }));
+                        // Store session metadata
+                        await uploadToPastebin(
+                            JSON.stringify({
+                                id: sessionId,
+                                created: new Date().toISOString(),
+                                sessionType: 'EF-PRIME-MD'
+                            }),
+                            'EF-PRIME-MD Session Metadata',
+                            'json',
+                            '1'
+                        );
+                    } catch (error) {
+                        console.error('Failed to upload to Pastebin:', error);
+                        // If Pastebin upload fails, send a fallback message
+                        await Hamza.sendMessage(Hamza.user.id, { text: 'Error generating session ID. Please try again later.' });
+                    }
 
                     await delay(100); // Delay before closing connection
                     await Hamza.ws.close(); // Close the WebSocket connection
