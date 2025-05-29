@@ -9,7 +9,7 @@ const {
     delay,
     makeCacheableSignalKeyStore,
     Browsers
-} = require("maher-zubair-baileys");
+} = require("whiskeysockets/baileys");
 
 const PASTEBIN_API_KEY = 'EMWTMkQAVfJa9kM-MRUrxd5Oku1U7pgL';
 
