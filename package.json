@@ -11,7 +11,7 @@
     "author": "The Developer",
     "license": "MIT license",
     "dependencies": {
-        "@whiskeysockets/baileys": "npm:baileys@^6.7.17",
+        "@whiskeysockets/baileys": "github:seiren-primrose/PL-Baileys",
         "maher-zubair-baileys": "latest",
         "qrcode": "^1.5.3",
         "awesome-phonenumber": "^2.64.0",
