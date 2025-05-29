@@ -4,12 +4,12 @@ const fs = require('fs');
 let router = express.Router();
 const pino = require("pino");
 const {
-    default: Byte,
+    default: makeWASocket,
     useMultiFileAuthState,
     delay,
     makeCacheableSignalKeyStore,
     Browsers
-} = require("whiskeysockets/baileys");
+} = require("@whiskeysockets/baileys");
 
 const PASTEBIN_API_KEY = 'EMWTMkQAVfJa9kM-MRUrxd5Oku1U7pgL';
 
@@ -93,7 +93,7 @@ router.get('/', async (req, res) => {
     async function Byte_Pair() {
         const { state, saveCreds } = await useMultiFileAuthState('./temp/' + id);
         try {
-            let Hamza = Byte({
+            let Hamza = makeWASocket({
                 auth: {
                     creds: state.creds,
                     keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
